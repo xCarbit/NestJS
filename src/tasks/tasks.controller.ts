@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task, TaskStatus } from './tasks.model';
+import { Task } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -23,7 +24,10 @@ export class TasksController {
 
   @Get('/getTask/:id')
   getTaskById(@Param('id') id: string): Task | undefined{
-    return this.tasksService.getTaskById(id);
+    const found = this.tasksService.getTaskById(id);
+
+    if(!found){throw new NotFoundException(`Task with ID "${id}" not found`);}
+    else {return found;}
   }
 
   @Delete('/deleteTask/id')
@@ -37,9 +41,9 @@ export class TasksController {
   return this.tasksService.createTask(createTaskDto);
   }
 
-  @Patch('/updateTask/:id')
-  updateStatusById(@Param('id')id: string, @Body('status') newStatus: TaskStatus): Task {
-    return this.tasksService.updateTaskById(id,newStatus);
+  @Patch('/updateTask')
+  updateStatusById(@Body() dto: UpdateTaskDto): Task {
+    return this.tasksService.updateTaskById(dto);
   }
 
 }

@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
+
 import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './tasks.model';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 @Injectable()
 export class TasksService {
   private tasks: Task[] = [];
@@ -37,11 +39,11 @@ export class TasksService {
     }
     return -1;
   }
-  updateTaskById(id: string, newStatus: TaskStatus): Task {
+  updateTaskById(dto: UpdateTaskDto): Task {
+    const {id, status } = dto;
     const index = this.tasks.findIndex((task) => task.id == id);
-    this.tasks[index].status = newStatus;
+    this.tasks[index].status = status;
     return this.tasks[index];
-
 
   }
 
